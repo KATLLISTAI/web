@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejemplo API Google Gemini</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        input[type="text"] {
+            padding: 10px;
+            margin-bottom: 10px;
+            width: 80%;
+            max-width: 500px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #responseText {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+            width: 80%;
+            max-width: 500px;
+            white-space: pre-wrap; /* Preserve line breaks */
+        }
+        .footer-text {
+            margin-top: 30px;
+            font-size: 0.9em;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <h1>Sollkat AI</h1>
+
+    <input type="text" id="inputText" placeholder="Escribe algo aquí...">
+
+    <button id="generateButton">Generar</button>
+
+    <p id="responseText"></p>
+
+    <p class="footer-text">®iMatt foundation Todos los derechos reservados</p>
+
+    <script type="importmap">
+        {
+          "imports": {
+            "@google/generative-ai": "https://esm.run/@google/generative-ai"
+          }
+        }
+    </script>
+
+    <script type="module">
+        import { GoogleGenerativeAI } from "@google/generative-ai";
+
+        // IMPORTANT: Replace 'YOUR_API_KEY' with your actual Google Gemini API key.
+        // Get your API key from the Google AI Studio: https://aistudio.google.com/
+        const API_KEY = 'AIzaSyBBJwGlAfD44WZbXy8KSohOAbhA73bOY-k';
+
+        // Initialize the Generative AI client
+        const genAI = new GoogleGenerativeAI(API_KEY);
+
+        // Get references to the HTML elements
+        const generateButton = document.getElementById('generateButton');
+        const inputText = document.getElementById('inputText');
+        const responseText = document.getElementById('responseText');
+
+        // Add event listener to the button
+        generateButton.addEventListener('click', async () => {
+            const prompt = inputText.value; // Get the text from the input field
+
+            // Check if the input is empty
+            if (!prompt) {
+                responseText.innerText = "Please enter some text to generate a response.";
+                return;
+            }
+
+            // Specify the model to use
+            const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro-latest"});
+
+            // Clear previous response and show loading indicator (optional)
+            responseText.innerText = "Generando..."; // Simple loading text
+
+            try {
+                // Call the Gemini API to generate content
+                const result = await model.generateContent(prompt);
+                const response = await result.response;
+                const text = response.text(); // Get the generated text
+
+                // Display the generated text
+                responseText.innerText = text;
+
+            } catch (error) {
+                // Handle any errors during the API call
+                console.error('Error al generar contenido:', error);
+                responseText.innerText = 'Error generating content. Please check your API key and console for details.';
+            }
+        });
+    </script>
+</body>
+</html>
